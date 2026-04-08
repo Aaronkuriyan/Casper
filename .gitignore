@@ -1,12 +1,28 @@
-venv/
-*/venv/
-backend/venv/
-__pycache__/
-*/__pycache__/
-*.pyc
-*.pyo
+# --- Environment Variables (CRUCIAL) ---
 .env
-*.env
-memory/
+.env.*
+
+# --- Python Cache ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Virtual Environments ---
+venv/
+.venv/
+env/
+Lib/
+Scripts/
+
+# --- IDEs and Editors ---
+.vscode/
+.idea/
+*.swp
+
+# --- OS Generated Files ---
 .DS_Store
 Thumbs.db
+
+# --- Logs and Databases ---
+*.log
+*.sqlite3
