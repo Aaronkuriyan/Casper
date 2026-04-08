@@ -1,4 +1,4 @@
-# --- Environment Variables (CRUCIAL) ---
+# --- API Keys and Secrets ---
 .env
 .env.*
 
@@ -14,15 +14,11 @@ env/
 Lib/
 Scripts/
 
-# --- IDEs and Editors ---
+# --- Databases and Temporary Files ---
+*.sqlite3
+memory/jarvis_memory.json
+
+# --- OS/IDE Files ---
 .vscode/
 .idea/
-*.swp
-
-# --- OS Generated Files ---
 .DS_Store
-Thumbs.db
-
-# --- Logs and Databases ---
-*.log
-*.sqlite3
