@@ -2,19 +2,18 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import List
-import google.generativeai as genai
+from google import genai  # Updated for 2026 SDK
 import json, os, re
 from pathlib import Path
 from datetime import datetime
 from dotenv import load_dotenv
 
-# Load local environment variables if they exist
+# Load environment variables
 load_dotenv()
 
-# Initialize FastAPI
 app = FastAPI()
 
-# FIX: Comprehensive CORS configuration for Vercel
+# CORS setup for your Vercel frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["https://casper-seven.vercel.app"], 
@@ -23,21 +22,11 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Configure Gemini API
-# Make sure "GEMINI_API_KEY" is set in your Render Environment Variables
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-# Replace the model setup block with this:
-model = genai.GenerativeModel(
-    model_name="gemini-1.5-flash",
-    generation_config={
-        "temperature": 1,
-        "top_p": 0.95,
-        "top_k": 64,
-        "max_output_tokens": 8192,
-    }
-)
+# Initialize the new Google GenAI Client
+# Ensure GEMINI_API_KEY is set in your Render dashboard
+client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
-# Memory setup
+# Local Memory Setup
 MEMORY_FILE = Path("memory/jarvis_memory.json")
 MEMORY_FILE.parent.mkdir(exist_ok=True)
 
@@ -63,37 +52,38 @@ def save_memory(data):
 
 @app.get("/")
 def root():
-    return {"status": "CASPER online", "engine": "Gemini 1.5 Flash"}
+    return {"status": "CASPER online", "engine": "Gemini 2.5 Flash"}
 
 @app.post("/chat")
 async def chat(req: ChatRequest):
     memory_data = load_memory()
     all_memory = req.memory + memory_data["facts"] + memory_data["preferences"]
     
-    # System Instruction for Gemini
+    # System Instruction for the Assistant
     system_instruction = (
         f"You are CASPER, a personal AI assistant. Calm, precise, witty. "
-        f"User info: {', '.join(all_memory) if all_memory else 'None'}. "
-        f"Speak naturally, avoid markdown. Date: {datetime.now().strftime('%A, %d %B %Y')}."
+        f"User info: {', '.join(all_memory) if all_memory else 'No previous data'}. "
+        f"Speak naturally, avoid markdown. Today is {datetime.now().strftime('%A, %d %B %Y')}."
     )
 
-    # Convert frontend history to Gemini format (user/model)
-    # We take the history EXCEPT the last message to start the session
-    gemini_history = []
-    for m in req.history[:-1]:
+    # Convert frontend history to the new 2026 SDK format
+    # Note: role must be 'user' or 'model'
+    contents = []
+    for m in req.history:
         role = "user" if m.role == "user" else "model"
-        gemini_history.append({"role": role, "parts": [m.content]})
+        contents.append({"role": role, "parts": [{"text": m.content}]})
 
     try:
-        # Start the chat session
-        chat_session = model.start_chat(history=gemini_history)
+        # Generate response using the 2.5 Flash model
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=contents,
+            config={'system_instruction': system_instruction}
+        )
         
-        # Send the latest user message with system context
-        prompt = f"{system_instruction}\n\nUser: {req.message}"
-        response = chat_session.send_message(prompt)
         reply = response.text
         
-        # Simple memory logic: Catch name introduction
+        # Memory logic: detect name changes
         name_match = re.search(r"(?:my name is|i'm|call me)\s+([A-Z][a-z]+)", req.message, re.I)
         if name_match:
             entry = f"Name: {name_match.group(1)}"
@@ -104,11 +94,11 @@ async def chat(req: ChatRequest):
         return {"reply": reply}
         
     except Exception as e:
-        print(f"Gemini Error: {str(e)}")
+        print(f"Gemini 2.5 Error: {str(e)}")
         raise HTTPException(status_code=500, detail=f"AI Engine Error: {str(e)}")
 
-# Ensure the app binds to the port Render expects
 if __name__ == "__main__":
     import uvicorn
+    # Render assigns a dynamic port; default to 8000 locally
     port = int(os.environ.get("PORT", 8000))
     uvicorn.run(app, host="0.0.0.0", port=port)
