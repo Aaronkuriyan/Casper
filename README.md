@@ -1,92 +1,44 @@
-# Casper — Personal AI Assistant
+# 🧠 CASPER (Cognitive Autonomous System - Personal Edition)
 
-> *Powered by Claude AI | Voice-first | Always learning*
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688.svg?logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Gemini](https://img.shields.io/badge/Gemini-2.5_Flash-8E75B2.svg?logo=google)](https://aistudio.google.com/)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ECF8E.svg?logo=supabase)](https://supabase.com/)
+[![Live Demo](https://img.shields.io/badge/Status-Live-success.svg)](https://casper-seven.vercel.app)
 
-Casper is a personal AI assistant inspired by Iron Man's JARVIS. Talk to it using your voice, and it talks back. It remembers you across conversations and helps with anything you throw at it.
+> **Live Application:** [casper-seven.vercel.app](https://casper-seven.vercel.app)
 
----
-
-## Features
-
-- Voice input and output — just speak, it listens and responds
-- Powered by Claude (Anthropic API)
-- Persistent memory — remembers your name, preferences, and tasks
-- Python FastAPI backend
-- Clean dark UI that runs in your browser
+CASPER is a custom-built, full-stack personal AI agent. Unlike standard chatbots, CASPER is designed with persistent state memory and real-world execution capabilities (Function Calling), allowing it to remember user facts across sessions and interact with live external APIs.
 
 ---
 
-## Project Structure
+## 🚀 System Architecture
 
-Casper/
-├── frontend/
-│   └── index.html        # Full UI — voice, chat, styling all in one
-├── backend/
-│   ├── main.py           # FastAPI server + Claude API integration
-│   ├── requirements.txt  # Python dependencies
-│   └── .env.example      # Environment variables template
-├── .gitignore
-└── README.md
+The system is decoupled into a lightweight frontend client and a heavy-lifting Python backend, communicating via RESTful API.
 
----
+* **Brain:** Google GenAI (`gemini-2.5-flash`)
+* **Backend Framework:** FastAPI (Hosted on Render)
+* **Permanent Memory:** Supabase / PostgreSQL (Cloud Database)
+* **Frontend Interface:** Vanilla JS / HTML / CSS (Hosted on Vercel)
+* **External Integrations:** OpenWeatherMap API (Real-time Tool Calling)
 
-### Set up the backend
+## ✨ Core Capabilities
 
-cd backend
-python -m venv venv
-venv\Scripts\activate.bat
-pip install -r requirements.txt
-
-Server starts at http://localhost:8000
-
-### 5. Open the frontend
-Open `frontend/index.html` with Live Server in VS Code.
+* **🧠 Persistent Memory State:** Utilizes a PostgreSQL database to securely store and retrieve user facts, names, and preferences, allowing context to persist indefinitely across server restarts.
+* **🛠️ Autonomous Tool Execution:** Implements native Function Calling. The AI can dynamically decide when to execute backend Python functions (e.g., fetching live weather data) before formulating a response to the user.
+* **⚡ Asynchronous Processing:** Built on ASGI architecture using FastAPI and Uvicorn, ensuring high-throughput and non-blocking API requests.
+* **🛡️ Secure Environment:** Complete separation of concerns with strict CORS policies and secure injection of all API keys via environment variables.
 
 ---
 
-## Voice Support
+🔮 Future Roadmap
+[x] Integrate cloud database for permanent memory.
 
-| Browser | Voice Input | Voice Output |
-|---------|-------------|--------------|
-| Chrome  | Yes         | Yes          |
-| Edge    | Yes         | Yes          |
-| Firefox | No          | Yes          |
-| Safari  | Limited     | Yes          |
+[x] Implement real-time tool calling (Weather API).
 
-Use Chrome or Edge for the best experience.
+[ ] Implement Web Speech API for bi-directional voice interaction.
 
----
+[ ] Add advanced web-scraping tools for live news fetching.
 
-## How to use
+[ ] Migrate frontend to React.js for enhanced component state management.
 
-- Click the **microphone** button and speak
-- Casper listens, thinks, and talks back
-- Tell it your name — it will remember you
-- Ask it anything — general knowledge, planning, ideas
-- Type in the text box if you prefer not to use voice
-- Toggle voice replies on/off with the button at the bottom
-
----
-
-## Roadmap
-
-- [ ] Wake word detection — "Hey Casper"
-- [ ] Web search for real-time information
-- [ ] Task and reminder system
-- [ ] Smarter long-term memory
-- [ ] Mobile app
-
----
-
-## Built With
-
-- [Anthropic Claude](https://anthropic.com) — AI brain
-- [FastAPI](https://fastapi.tiangolo.com) — Python backend
-- Web Speech API — voice input and output
-- Vanilla HTML, CSS, JavaScript — frontend
-
----
-
-## License
-
-MIT — free to use, modify, and build on.
